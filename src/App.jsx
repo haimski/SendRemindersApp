@@ -62,9 +62,10 @@ export default function App() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SR) return
 
-    const base = message
-    baseTextRef.current = base
-    finalTextRef.current = base
+    // Snapshot text that existed before this voice session.
+    // finalTextRef tracks only the NEW text spoken in this session (starts empty).
+    baseTextRef.current = message.trim()
+    finalTextRef.current = ''
 
     const recognition = new SR()
     recognition.continuous = true
@@ -74,34 +75,43 @@ export default function App() {
     recognition.onstart = () => setIsListening(true)
 
     recognition.onresult = (event) => {
-      // Start from event.resultIndex — only process results that are new or updated.
-      // Iterating from 0 each time re-accumulates all previous finals, causing duplication.
-      let newFinals = ''
-      let interim = ''
+      // Rebuild session text from ALL results on every event — this is intentional.
+      // event.resultIndex is unreliable on mobile Chrome (often stuck at 0), so
+      // appending incrementally causes duplication. Rebuilding from scratch is
+      // idempotent: seeing result[0] ten times still produces the same text.
+      let sessionFinals = ''
+      let sessionInterim = ''
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) newFinals += event.results[i][0].transcript
-        else interim += event.results[i][0].transcript
+      for (let i = 0; i < event.results.length; i++) {
+        const r = event.results[i]
+        if (r.isFinal) {
+          sessionFinals += (sessionFinals ? ' ' : '') + r[0].transcript.trim()
+        } else {
+          sessionInterim = r[0].transcript // only the latest interim matters
+        }
       }
 
-      if (newFinals) {
-        const base = finalTextRef.current
-        const sep = base.length > 0 && !base.endsWith(' ') ? ' ' : ''
-        finalTextRef.current = base + sep + newFinals
-      }
+      finalTextRef.current = sessionFinals
 
-      setMessage(finalTextRef.current + interim)
+      const base = baseTextRef.current
+      const sep = base && (sessionFinals || sessionInterim) ? ' ' : ''
+      const sessionText = sessionFinals + (sessionFinals && sessionInterim ? ' ' : '') + sessionInterim
+      setMessage(base + sep + sessionText)
     }
 
     recognition.onerror = (event) => {
       if (event.error !== 'no-speech') console.error('Speech error:', event.error)
       setIsListening(false)
-      setMessage(finalTextRef.current)
+      const base = baseTextRef.current
+      const finals = finalTextRef.current
+      setMessage(base + (base && finals ? ' ' : '') + finals)
     }
 
     recognition.onend = () => {
       setIsListening(false)
-      setMessage(finalTextRef.current)
+      const base = baseTextRef.current
+      const finals = finalTextRef.current
+      setMessage(base + (base && finals ? ' ' : '') + finals)
     }
 
     recognitionRef.current = recognition
