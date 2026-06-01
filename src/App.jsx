@@ -131,10 +131,11 @@ export default function App() {
     setSubmitStatus(null)
 
     try {
-      // URLSearchParams sends as application/x-www-form-urlencoded — a "simple"
-      // CORS request that requires no preflight, making it reliable from browsers.
-      const body = new URLSearchParams({ message: message.trim() })
-      const res = await fetch(WEBHOOK_URL, { method: 'POST', body })
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message.trim() }),
+      })
       if (res.ok) {
         setSubmitStatus('success')
         setMessage('')
