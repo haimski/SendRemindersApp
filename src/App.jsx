@@ -69,34 +69,26 @@ export default function App() {
 
     const recognition = new SR()
     recognition.continuous = true
-    recognition.interimResults = true
+    recognition.interimResults = false  // finals only — mobile interim results are word-by-word and cause flickering
     recognition.lang = SPEECH_LANG[lang]
 
     recognition.onstart = () => setIsListening(true)
 
     recognition.onresult = (event) => {
-      // Rebuild session text from ALL results on every event — this is intentional.
-      // event.resultIndex is unreliable on mobile Chrome (often stuck at 0), so
-      // appending incrementally causes duplication. Rebuilding from scratch is
-      // idempotent: seeing result[0] ten times still produces the same text.
+      // Collect only final results. Rebuilding from all results each time is
+      // idempotent — safe regardless of how mobile browsers fire events.
       let sessionFinals = ''
-      let sessionInterim = ''
-
       for (let i = 0; i < event.results.length; i++) {
-        const r = event.results[i]
-        if (r.isFinal) {
-          sessionFinals += (sessionFinals ? ' ' : '') + r[0].transcript.trim()
-        } else {
-          sessionInterim = r[0].transcript // only the latest interim matters
+        if (event.results[i].isFinal) {
+          sessionFinals += (sessionFinals ? ' ' : '') + event.results[i][0].transcript.trim()
         }
       }
 
-      finalTextRef.current = sessionFinals
-
-      const base = baseTextRef.current
-      const sep = base && (sessionFinals || sessionInterim) ? ' ' : ''
-      const sessionText = sessionFinals + (sessionFinals && sessionInterim ? ' ' : '') + sessionInterim
-      setMessage(base + sep + sessionText)
+      if (sessionFinals) {
+        finalTextRef.current = sessionFinals
+        const base = baseTextRef.current
+        setMessage(base + (base && sessionFinals ? ' ' : '') + sessionFinals)
+      }
     }
 
     recognition.onerror = (event) => {
