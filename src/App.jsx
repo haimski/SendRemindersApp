@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './App.css'
 
-const WEBHOOK_URL = 'https://hook.eu2.make.com/wpc9k58nm6rjhlk2p28lr7u1y0wm4ryw'
+const WEBHOOK_URL = 'https://hook.eu1.make.com/w4jjrpb65n7an75ur1vjqh0u16svpqw7'
 
 export default function App() {
   const [message, setMessage] = useState('')
