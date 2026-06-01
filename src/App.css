@@ -1,10 +1,32 @@
+/*
+  Design tokens (Modern Utility — DESIGN.md)
+  ─────────────────────────────────────────────
+  background:              #f8f9ff
+  surface-container-low:   #eff4ff
+  surface-container-high:  #dce9ff
+  surface-container-lowest:#ffffff
+  on-background:           #0b1c30
+  on-surface-variant:      #45464d
+  outline:                 #76777d
+  outline-variant:         #c6c6cd
+  secondary (interactive): #0058be
+  primary-container:       #131b2e   ← primary action bg
+  inverse-surface:         #213145   ← primary action hover
+  tertiary-fixed-dim:      #4edea3   ← mic / success accent
+  on-tertiary-container:   #009668
+  on-tertiary-fixed-variant:#005236
+  error:                   #ba1a1a
+  error-container:         #ffdad6
+  on-error-container:      #93000a
+*/
+
 /* ─── App shell ───────────────────────────────────────────── */
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #EEF1F7;
+  background: #f8f9ff;
 }
 
 /* ─── Top navbar ──────────────────────────────────────────── */
@@ -17,15 +39,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #F5F7FB;
-  border-bottom: 1px solid #E4E9F2;
+  background: #eff4ff;
+  border-bottom: 1px solid #c6c6cd;
   flex-shrink: 0;
 }
 
 .navbar-brand {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #1E2D7D;
+  color: #0b1c30;
   letter-spacing: -0.01em;
   pointer-events: none;
 }
@@ -38,7 +60,7 @@
   gap: 5px;
   border: none;
   background: transparent;
-  color: #5C6E9A;
+  color: #45464d;
   font-family: inherit;
   font-size: 0.82rem;
   font-weight: 500;
@@ -52,8 +74,8 @@
 }
 
 .lang-switch:hover {
-  background: #E8EDF5;
-  color: #1E2D7D;
+  background: #dce9ff;
+  color: #0b1c30;
 }
 
 .lang-switch svg {
@@ -81,7 +103,7 @@
 .hero-title {
   font-size: 2rem;
   font-weight: 800;
-  color: #1E2D7D;
+  color: #0b1c30;
   line-height: 1.2;
   margin-bottom: 8px;
   letter-spacing: -0.02em;
@@ -89,7 +111,7 @@
 
 .hero-subtitle {
   font-size: 0.92rem;
-  color: #8B9BB4;
+  color: #45464d;
   line-height: 1.5;
 }
 
@@ -101,20 +123,22 @@
   gap: 14px;
 }
 
-/* ─── Card ────────────────────────────────────────────────── */
+/* ─── Card ─────────────────────────────────────────────────
+   Level 1 elevation: white + soft ambient shadow (4–6% black)
+   No border — depth via shadow only (per design spec)        */
 
 .card {
   background: #ffffff;
   border-radius: 18px;
   padding: 18px 20px 20px;
-  box-shadow: 0 2px 16px rgba(30, 45, 125, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .card-label {
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #6366f1;
+  color: #0058be;
   margin-bottom: 10px;
   letter-spacing: 0.01em;
 }
@@ -128,13 +152,13 @@
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.65;
-  color: #1e293b;
+  color: #0b1c30;
   background: transparent;
   resize: none;
 }
 
 .textarea::placeholder {
-  color: #C0CBD9;
+  color: #c6c6cd;
 }
 
 .textarea:disabled {
@@ -149,7 +173,7 @@
   gap: 7px;
   font-size: 0.82rem;
   font-weight: 500;
-  color: #ef4444;
+  color: #ba1a1a;
 }
 
 .dot {
@@ -157,7 +181,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ef4444;
+  background: #ba1a1a;
   animation: blink 1s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -169,7 +193,7 @@
 
 .unsupported-hint {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #76777d;
   text-align: center;
 }
 
@@ -178,7 +202,7 @@
 .submit-btn {
   width: 100%;
   padding: 17px 22px;
-  background: #1E2D7D;
+  background: #131b2e;
   color: #ffffff;
   border: none;
   border-radius: 16px;
@@ -202,7 +226,7 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #25378F;
+  background: #213145;
 }
 
 .submit-btn:active:not(:disabled) {
@@ -225,15 +249,15 @@
 }
 
 .status-msg.success {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
+  background: #e3fdf1;
+  color: #005236;
+  border: 1px solid #6ffbbe;
 }
 
 .status-msg.error {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  background: #ffdad6;
+  color: #93000a;
+  border: 1px solid #ffb4ab;
 }
 
 /* ─── Fixed bottom bar ────────────────────────────────────── */
@@ -245,7 +269,7 @@
   right: 0;
   height: 72px;
   background: #ffffff;
-  border-top: 1px solid #E4E9F2;
+  border-top: 1px solid #c6c6cd;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -260,14 +284,14 @@
   height: 64px;
   border: none;
   border-radius: 50%;
-  background: #50CAC4;
+  background: #4edea3;
   color: #ffffff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transform: translateY(-18px);
-  box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5);
+  box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45);
   transition: background 0.18s, box-shadow 0.18s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -279,7 +303,7 @@
 }
 
 .mic-btn:hover:not(:disabled) {
-  background: #3DBDB7;
+  background: #009668;
 }
 
 .mic-btn:active:not(:disabled) {
@@ -297,10 +321,10 @@
 
 @keyframes mic-pulse {
   0%, 100% {
-    box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5);
+    box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45);
   }
   50% {
-    box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5), 0 0 0 14px rgba(80, 202, 196, 0.15);
+    box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45), 0 0 0 14px rgba(78, 222, 163, 0.15);
   }
 }
 
