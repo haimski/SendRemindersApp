@@ -122,18 +122,19 @@ export default function App() {
     setSubmitStatus(null)
 
     try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: message.trim() }),
-      })
+      // URLSearchParams sends as application/x-www-form-urlencoded — a "simple"
+      // CORS request that requires no preflight, making it reliable from browsers.
+      const body = new URLSearchParams({ message: message.trim() })
+      const res = await fetch(WEBHOOK_URL, { method: 'POST', body })
       if (res.ok) {
         setSubmitStatus('success')
         setMessage('')
       } else {
+        console.error('Webhook error — status:', res.status, res.statusText)
         setSubmitStatus('error')
       }
-    } catch {
+    } catch (err) {
+      console.error('Webhook fetch failed:', err.name, err.message)
       setSubmitStatus('error')
     } finally {
       setIsSubmitting(false)
