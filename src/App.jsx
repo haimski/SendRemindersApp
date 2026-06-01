@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './App.css'
 
-const WEBHOOK_URL = 'https://hook.eu1.make.com/w4jjrpb65n7an75ur1vjqh0u16svpqw7'
-
+const WEBHOOK_URL = 'https://hook.eu1.make.com/lf0617jj0784ieptz69judkf5m4w82nu'                     
 const T = {
   en: {
     title: 'Send Reminders to Yourself',
