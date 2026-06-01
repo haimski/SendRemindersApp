@@ -74,16 +74,23 @@ export default function App() {
     recognition.onstart = () => setIsListening(true)
 
     recognition.onresult = (event) => {
-      let finals = ''
+      // Start from event.resultIndex — only process results that are new or updated.
+      // Iterating from 0 each time re-accumulates all previous finals, causing duplication.
+      let newFinals = ''
       let interim = ''
-      for (let i = 0; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) finals += result[0].transcript
-        else interim += result[0].transcript
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) newFinals += event.results[i][0].transcript
+        else interim += event.results[i][0].transcript
       }
-      const confirmed = baseTextRef.current + (baseTextRef.current && finals ? ' ' : '') + finals
-      finalTextRef.current = confirmed
-      setMessage(confirmed + interim)
+
+      if (newFinals) {
+        const base = finalTextRef.current
+        const sep = base.length > 0 && !base.endsWith(' ') ? ' ' : ''
+        finalTextRef.current = base + sep + newFinals
+      }
+
+      setMessage(finalTextRef.current + interim)
     }
 
     recognition.onerror = (event) => {
