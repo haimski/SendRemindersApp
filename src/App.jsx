@@ -3,7 +3,37 @@ import './App.css'
 
 const WEBHOOK_URL = 'https://hook.eu1.make.com/w4jjrpb65n7an75ur1vjqh0u16svpqw7'
 
+const T = {
+  en: {
+    title: 'Send A Reminder to Yourself',
+    label: 'Your message',
+    placeholder: 'Type your message here…',
+    listeningHint: 'Listening — tap the mic to stop',
+    unsupported: 'Voice input is not supported in this browser.',
+    send: 'Send Message',
+    sending: 'Sending…',
+    success: 'Message sent successfully!',
+    error: 'Something went wrong. Please try again.',
+    langSwitch: 'עב',
+  },
+  he: {
+    title: 'שלח תזכורת לעצמך',
+    label: 'ההודעה שלך',
+    placeholder: 'הקלד את ההודעה כאן…',
+    listeningHint: 'מאזין — הקש על המיקרופון כדי לעצור',
+    unsupported: 'קלט קולי אינו נתמך בדפדפן זה.',
+    send: 'שלח',
+    sending: 'שולח…',
+    success: 'ההודעה נשלחה בהצלחה!',
+    error: 'משהו השתבש. אנא נסה שוב.',
+    langSwitch: 'EN',
+  },
+}
+
+const SPEECH_LANG = { en: 'en-US', he: 'he-IL' }
+
 export default function App() {
+  const [lang, setLang] = useState('he')
   const [message, setMessage] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [submitStatus, setSubmitStatus] = useState(null) // null | 'success' | 'error'
@@ -11,8 +41,16 @@ export default function App() {
   const [speechSupported, setSpeechSupported] = useState(false)
 
   const recognitionRef = useRef(null)
-  const baseTextRef = useRef('')   // text in textarea when voice started
-  const finalTextRef = useRef('')  // accumulated confirmed final speech
+  const baseTextRef = useRef('')
+  const finalTextRef = useRef('')
+
+  const t = T[lang]
+  const dir = lang === 'he' ? 'rtl' : 'ltr'
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.documentElement.dir = dir
+  }, [lang, dir])
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -23,7 +61,6 @@ export default function App() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SR) return
 
-    // Snapshot current text so we can prepend it to speech output
     const base = message
     baseTextRef.current = base
     finalTextRef.current = base
@@ -31,7 +68,7 @@ export default function App() {
     const recognition = new SR()
     recognition.continuous = true
     recognition.interimResults = true
-    recognition.lang = navigator.language || 'en-US'
+    recognition.lang = SPEECH_LANG[lang]
 
     recognition.onstart = () => setIsListening(true)
 
@@ -58,7 +95,6 @@ export default function App() {
         console.error('Speech error:', event.error)
       }
       setIsListening(false)
-      // Revert to only confirmed final text (drop any dangling interim)
       setMessage(finalTextRef.current)
     }
 
@@ -73,7 +109,6 @@ export default function App() {
 
   const stopListening = () => {
     recognitionRef.current?.stop()
-    // State + message update happens in onend / onerror
   }
 
   const toggleListening = () => {
@@ -84,11 +119,15 @@ export default function App() {
     }
   }
 
+  const handleLangSwitch = () => {
+    if (isListening) stopListening()
+    setLang(l => l === 'en' ? 'he' : 'en')
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!message.trim() || isSubmitting) return
 
-    // Stop voice if still active
     if (isListening) stopListening()
 
     setIsSubmitting(true)
@@ -115,13 +154,22 @@ export default function App() {
   }
 
   return (
-    <div className="page">
+    <div className="page" dir={dir}>
       <div className="card">
-        <h1 className="title">Send a Message</h1>
+        <div className="card-top">
+          <h1 className="title">{t.title}</h1>
+          <button
+            className="lang-btn"
+            onClick={handleLangSwitch}
+            aria-label="Switch language"
+          >
+            {t.langSwitch}
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="form" noValidate>
           <label className="label" htmlFor="message">
-            Your message
+            {t.label}
           </label>
 
           <div className="textarea-wrap">
@@ -130,8 +178,9 @@ export default function App() {
               className="textarea"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message here…"
+              placeholder={t.placeholder}
               disabled={isSubmitting}
+              dir={dir}
             />
 
             {speechSupported && (
@@ -150,14 +199,12 @@ export default function App() {
           {isListening && (
             <p className="listening-hint">
               <span className="dot" />
-              Listening — tap the mic to stop
+              {t.listeningHint}
             </p>
           )}
 
           {!speechSupported && (
-            <p className="unsupported-hint">
-              Voice input is not supported in this browser.
-            </p>
+            <p className="unsupported-hint">{t.unsupported}</p>
           )}
 
           <button
@@ -165,19 +212,15 @@ export default function App() {
             className="submit-btn"
             disabled={isSubmitting || !message.trim()}
           >
-            {isSubmitting ? 'Sending…' : 'Send Message'}
+            {isSubmitting ? t.sending : t.send}
           </button>
         </form>
 
         {submitStatus === 'success' && (
-          <div className="status-msg success">
-            Message sent successfully!
-          </div>
+          <div className="status-msg success">{t.success}</div>
         )}
         {submitStatus === 'error' && (
-          <div className="status-msg error">
-            Something went wrong. Please try again.
-          </div>
+          <div className="status-msg error">{t.error}</div>
         )}
       </div>
     </div>
