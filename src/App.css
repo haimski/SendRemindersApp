@@ -1,63 +1,96 @@
-/* ─── Layout ──────────────────────────────────────────────── */
+/* ─── App shell ───────────────────────────────────────────── */
 
-.page {
-  min-height: 100vh;
+.app {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 24px 16px 48px;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #EEF1F7;
 }
 
-.card {
-  width: 100%;
-  max-width: 520px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 28px 24px 32px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
-  margin-top: 16px;
-}
+/* ─── Top navbar ──────────────────────────────────────────── */
 
-/* ─── Card top: title + language switcher ─────────────────── */
-
-.card-top {
-  position: relative;
-  margin-bottom: 24px;
-}
-
-.title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #1e293b;
-  text-align: center;
-  letter-spacing: -0.01em;
-  /* symmetric padding so the title stays centred with the lang button present */
-  padding-inline: 52px;
-}
-
-.lang-btn {
-  position: absolute;
+.navbar {
+  position: sticky;
   top: 0;
-  inset-inline-end: 0;
-  padding: 5px 11px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
+  z-index: 100;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F7FB;
+  border-bottom: 1px solid #E4E9F2;
+  flex-shrink: 0;
+}
+
+.navbar-brand {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1E2D7D;
+  letter-spacing: -0.01em;
+  pointer-events: none;
+}
+
+.lang-switch {
+  position: absolute;
+  inset-inline-start: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
   background: transparent;
-  color: #64748b;
+  color: #5C6E9A;
   font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  padding: 6px 8px;
+  border-radius: 8px;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  line-height: 1.4;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
-.lang-btn:hover {
-  border-color: #818cf8;
-  color: #6366f1;
-  background: #f5f3ff;
+.lang-switch:hover {
+  background: #E8EDF5;
+  color: #1E2D7D;
+}
+
+.lang-switch svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+/* ─── Scrollable content ──────────────────────────────────── */
+
+.content {
+  flex: 1;
+  padding: 28px 20px 110px;
+  max-width: 540px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ─── Hero ────────────────────────────────────────────────── */
+
+.hero {
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1E2D7D;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 0.92rem;
+  color: #8B9BB4;
+  line-height: 1.5;
 }
 
 /* ─── Form ────────────────────────────────────────────────── */
@@ -65,107 +98,47 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
-.label {
-  font-size: 0.85rem;
+/* ─── Card ────────────────────────────────────────────────── */
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 20px 20px;
+  box-shadow: 0 2px 16px rgba(30, 45, 125, 0.07);
+}
+
+.card-label {
+  display: block;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #64748b;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-/* ─── Textarea + mic ──────────────────────────────────────── */
-
-.textarea-wrap {
-  position: relative;
+  color: #6366f1;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
 }
 
 .textarea {
   width: 100%;
-  min-height: 160px;
-  /* logical padding: start = text side, end = mic button side */
-  padding-block: 14px;
-  padding-inline-start: 16px;
-  padding-inline-end: 52px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 14px;
+  min-height: 210px;
+  padding: 0;
+  border: none;
+  outline: none;
   font-family: inherit;
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #1e293b;
-  background: #f8fafc;
-  resize: vertical;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  background: transparent;
+  resize: none;
 }
 
 .textarea::placeholder {
-  color: #b0bec5;
-}
-
-.textarea:focus {
-  outline: none;
-  border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.18);
-  background: #ffffff;
+  color: #C0CBD9;
 }
 
 .textarea:disabled {
   opacity: 0.6;
-}
-
-/* mic button — bottom corner on the inline-end side (flips with RTL) */
-
-.mic-btn {
-  position: absolute;
-  bottom: 10px;
-  inset-inline-end: 10px;
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.18s, color 0.18s, transform 0.1s;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.mic-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.mic-btn:hover:not(:disabled) {
-  background: #e2e8f0;
-  color: #475569;
-}
-
-.mic-btn:active:not(:disabled) {
-  transform: scale(0.90);
-}
-
-.mic-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Listening state: red pulse */
-
-.mic-btn.listening {
-  background: #fff1f2;
-  color: #ef4444;
-  animation: mic-pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes mic-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-  50%       { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
 }
 
 /* ─── Hints ───────────────────────────────────────────────── */
@@ -204,24 +177,32 @@
 
 .submit-btn {
   width: 100%;
-  padding: 15px;
-  margin-top: 6px;
-  background: #6366f1;
+  padding: 17px 22px;
+  background: #1E2D7D;
   color: #ffffff;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   transition: background 0.18s, opacity 0.18s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
+.submit-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .submit-btn:hover:not(:disabled) {
-  background: #4f46e5;
+  background: #25378F;
 }
 
 .submit-btn:active:not(:disabled) {
@@ -236,7 +217,6 @@
 /* ─── Status messages ─────────────────────────────────────── */
 
 .status-msg {
-  margin-top: 16px;
   padding: 13px 16px;
   border-radius: 12px;
   font-size: 0.9rem;
@@ -256,20 +236,82 @@
   border: 1px solid #fecaca;
 }
 
+/* ─── Fixed bottom bar ────────────────────────────────────── */
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: #ffffff;
+  border-top: 1px solid #E4E9F2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  z-index: 100;
+}
+
+/* Mic button — elevated above the bar */
+
+.mic-btn {
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 50%;
+  background: #50CAC4;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-18px);
+  box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5);
+  transition: background 0.18s, box-shadow 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mic-btn svg {
+  width: 27px;
+  height: 27px;
+}
+
+.mic-btn:hover:not(:disabled) {
+  background: #3DBDB7;
+}
+
+.mic-btn:active:not(:disabled) {
+  transform: translateY(-18px) scale(0.92);
+}
+
+.mic-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mic-btn.listening {
+  animation: mic-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% {
+    box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5);
+  }
+  50% {
+    box-shadow: 0 6px 22px rgba(80, 202, 196, 0.5), 0 0 0 14px rgba(80, 202, 196, 0.15);
+  }
+}
+
 /* ─── Desktop refinement ──────────────────────────────────── */
 
 @media (min-width: 480px) {
-  .page {
-    align-items: center;
-    padding: 40px 24px;
+  .content {
+    padding-top: 40px;
   }
 
-  .card {
-    margin-top: 0;
-    padding: 36px 36px 40px;
-  }
-
-  .title {
-    font-size: 1.6rem;
+  .hero-title {
+    font-size: 2.3rem;
   }
 }

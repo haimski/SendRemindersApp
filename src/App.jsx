@@ -5,28 +5,30 @@ const WEBHOOK_URL = 'https://hook.eu1.make.com/w4jjrpb65n7an75ur1vjqh0u16svpqw7'
 
 const T = {
   en: {
-    title: 'Send A Reminder to Yourself',
-    label: 'Your message',
-    placeholder: 'Type your message here…',
+    title: 'Send Reminders to Yourself',
+    subtitle: 'Record or type your reminder below',
+    label: 'Your reminder',
+    placeholder: 'Type your reminder or shopping list here…',
     listeningHint: 'Listening — tap the mic to stop',
     unsupported: 'Voice input is not supported in this browser.',
-    send: 'Send Message',
+    send: 'Send to WhatsApp',
     sending: 'Sending…',
     success: 'Message sent successfully!',
     error: 'Something went wrong. Please try again.',
-    langSwitch: 'עב',
+    langLabel: 'English',
   },
   he: {
-    title: 'שלח תזכורת לעצמך',
-    label: 'ההודעה שלך',
-    placeholder: 'הקלד את ההודעה כאן…',
+    title: 'שלחו תזכורות לעצמכם',
+    subtitle: 'הקליטו או כתבו את התזכורת שלכם למטה',
+    label: 'התזכורת שלך',
+    placeholder: 'הזן את התזכורת או רשימת הקניות שלך כאן…',
     listeningHint: 'מאזין — הקש על המיקרופון כדי לעצור',
     unsupported: 'קלט קולי אינו נתמך בדפדפן זה.',
-    send: 'שלח',
+    send: 'שלח ל-WhatsApp',
     sending: 'שולח…',
     success: 'ההודעה נשלחה בהצלחה!',
     error: 'משהו השתבש. אנא נסה שוב.',
-    langSwitch: 'EN',
+    langLabel: 'עברית',
   },
 }
 
@@ -75,25 +77,18 @@ export default function App() {
     recognition.onresult = (event) => {
       let finals = ''
       let interim = ''
-
       for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i]
-        if (result.isFinal) {
-          finals += result[0].transcript
-        } else {
-          interim += result[0].transcript
-        }
+        if (result.isFinal) finals += result[0].transcript
+        else interim += result[0].transcript
       }
-
       const confirmed = baseTextRef.current + (baseTextRef.current && finals ? ' ' : '') + finals
       finalTextRef.current = confirmed
       setMessage(confirmed + interim)
     }
 
     recognition.onerror = (event) => {
-      if (event.error !== 'no-speech') {
-        console.error('Speech error:', event.error)
-      }
+      if (event.error !== 'no-speech') console.error('Speech error:', event.error)
       setIsListening(false)
       setMessage(finalTextRef.current)
     }
@@ -107,16 +102,11 @@ export default function App() {
     recognition.start()
   }
 
-  const stopListening = () => {
-    recognitionRef.current?.stop()
-  }
+  const stopListening = () => recognitionRef.current?.stop()
 
   const toggleListening = () => {
-    if (isListening) {
-      stopListening()
-    } else {
-      startListening()
-    }
+    if (isListening) stopListening()
+    else startListening()
   }
 
   const handleLangSwitch = () => {
@@ -127,7 +117,6 @@ export default function App() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!message.trim() || isSubmitting) return
-
     if (isListening) stopListening()
 
     setIsSubmitting(true)
@@ -139,7 +128,6 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: message.trim() }),
       })
-
       if (res.ok) {
         setSubmitStatus('success')
         setMessage('')
@@ -154,25 +142,28 @@ export default function App() {
   }
 
   return (
-    <div className="page" dir={dir}>
-      <div className="card">
-        <div className="card-top">
-          <h1 className="title">{t.title}</h1>
-          <button
-            className="lang-btn"
-            onClick={handleLangSwitch}
-            aria-label="Switch language"
-          >
-            {t.langSwitch}
-          </button>
+    <div className="app" dir={dir}>
+
+      {/* ── Top navbar ── */}
+      <nav className="navbar">
+        <button className="lang-switch" onClick={handleLangSwitch} aria-label="Switch language">
+          <GlobeIcon />
+          <span>{t.langLabel}</span>
+        </button>
+        <span className="navbar-brand">iRemindMe</span>
+      </nav>
+
+      {/* ── Scrollable content ── */}
+      <main className="content">
+
+        <div className="hero">
+          <h1 className="hero-title">{t.title}</h1>
+          <p className="hero-subtitle">{t.subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="form" noValidate>
-          <label className="label" htmlFor="message">
-            {t.label}
-          </label>
-
-          <div className="textarea-wrap">
+          <div className="card">
+            <label className="card-label" htmlFor="message">{t.label}</label>
             <textarea
               id="message"
               className="textarea"
@@ -182,18 +173,6 @@ export default function App() {
               disabled={isSubmitting}
               dir={dir}
             />
-
-            {speechSupported && (
-              <button
-                type="button"
-                className={`mic-btn${isListening ? ' listening' : ''}`}
-                onClick={toggleListening}
-                aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-                disabled={isSubmitting}
-              >
-                {isListening ? <StopIcon /> : <MicIcon />}
-              </button>
-            )}
           </div>
 
           {isListening && (
@@ -212,7 +191,12 @@ export default function App() {
             className="submit-btn"
             disabled={isSubmitting || !message.trim()}
           >
-            {isSubmitting ? t.sending : t.send}
+            {isSubmitting ? t.sending : (
+              <>
+                <span>{t.send}</span>
+                <ArrowIcon />
+              </>
+            )}
           </button>
         </form>
 
@@ -222,8 +206,45 @@ export default function App() {
         {submitStatus === 'error' && (
           <div className="status-msg error">{t.error}</div>
         )}
+
+      </main>
+
+      {/* ── Fixed bottom bar ── */}
+      <div className="bottom-bar">
+        {speechSupported && (
+          <button
+            type="button"
+            className={`mic-btn${isListening ? ' listening' : ''}`}
+            onClick={toggleListening}
+            aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+            disabled={isSubmitting}
+          >
+            {isListening ? <StopIcon /> : <MicIcon />}
+          </button>
+        )}
       </div>
+
     </div>
+  )
+}
+
+function GlobeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <ellipse cx="12" cy="12" rx="4" ry="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+    </svg>
+  )
+}
+
+function ArrowIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
   )
 }
 
