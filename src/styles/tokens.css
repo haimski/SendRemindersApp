@@ -1,0 +1,54 @@
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — Modern Utility (DESIGN.md)
+   Single source of truth for all colors, spacing and radii.
+   Import this file once in index.css; use variables everywhere.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --c-bg:           #f8f9ff;
+  --c-surface:      #ffffff;
+  --c-surface-low:  #eff4ff;
+  --c-surface-high: #dce9ff;
+
+  /* Text */
+  --c-on-bg:       #0b1c30;
+  --c-on-variant:  #45464d;
+  --c-outline:     #76777d;
+  --c-outline-variant: #c6c6cd;
+
+  /* Primary action (submit button) */
+  --c-primary:       #131b2e;
+  --c-primary-hover: #213145;
+
+  /* Secondary — interactive labels, focus rings */
+  --c-secondary: #0058be;
+
+  /* Tertiary — mic button, success accents */
+  --c-tertiary:       #4edea3;
+  --c-tertiary-hover: #009668;
+
+  /* Error */
+  --c-error:             #ba1a1a;
+  --c-error-container:   #ffdad6;
+  --c-on-error-container:#93000a;
+
+  /* Success (tertiary-derived) */
+  --c-success-bg:     #e3fdf1;
+  --c-success-text:   #005236;
+  --c-success-border: #6ffbbe;
+
+  /* Spacing (8px base grid) */
+  --sp-xs: 4px;
+  --sp-sm: 8px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 32px;
+
+  /* Border radii */
+  --r-sm:     8px;
+  --r-md:     12px;
+  --r-lg:     14px;
+  --r-button: 16px;
+  --r-card:   18px;
+  --r-full:   9999px;
+}

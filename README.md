@@ -1,157 +1,155 @@
 # iRemindMe
 
-A mobile-first React web app that lets users type or dictate a reminder and send it to a Make.com webhook. Supports Hebrew and English with full RTL layout.
+A mobile-first web app that lets users dictate or type reminders and send them instantly to a Make.com automation via webhook.
 
 ---
 
-## What It Does
+## For Product Managers
 
-- User types or speaks a reminder into a textarea
-- Taps **Send** → the message is POSTed as JSON to a Make.com webhook
-- A success or error state is shown inline; the form resets on success
-- Language switcher toggles between Hebrew (RTL) and English (LTR)
+### What it does
+
+- User opens the app on their phone
+- Types or speaks a reminder (voice-to-text via the mic button)
+- Taps **Send to WhatsApp** — the message is delivered to the connected Make.com scenario
+- The interface is available in **Hebrew** (default, RTL layout) and **English** (LTR layout)
+- The app only works in **portrait mode** — rotating to landscape shows a "please rotate" screen
+
+### Current status
+
+Phase 2 in progress. Phase 1 (core send flow) is complete and live.
+
+### Supported platforms
+
+| Platform | Voice input | Send |
+|---|---|---|
+| Android Chrome | ✓ Full support | ✓ |
+| iOS Safari 14.5+ | ✓ Works (auto-stops after silence) | ✓ |
+| Desktop browsers | ✗ No mic (form still works) | ✓ |
 
 ---
 
-## Tech Stack
+## For Developers
+
+### Quick start
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # production build → /dist
+npm run preview    # preview production build locally
+```
+
+### Deploy to Vercel
+
+1. Push to GitHub
+2. Import repo at [vercel.com](https://vercel.com) — Vite is auto-detected
+3. Build command: `npm run build`, output: `dist`
+4. Click Deploy
+
+---
+
+## Architecture
+
+### Tech stack
 
 | Layer | Choice | Why |
 |---|---|---|
-| UI framework | React 18 | Component model, state management |
-| Build tool | Vite 5 | Fast dev server, optimized production build |
+| UI framework | React 18 | Component model, hooks |
+| Build tool | Vite 5 | Fast dev server, optimised production build |
+| State management | **Zustand 5** | Selective re-renders, no provider boilerplate, ~1 KB |
 | Voice input | Web Speech API (browser-native) | No library, no API key, works on mobile |
-| Form submission | Fetch API | No page redirect, inline feedback |
-| i18n / RTL | Built-in (no library) | Only 2 languages; CSS logical properties handle RTL |
-| Styling | Plain CSS | No dependencies, easy to customize |
+| Webhook | Fetch API — JSON POST | Reliable, Make.com maps JSON fields directly |
+| Styling | Plain CSS + CSS custom properties | No dependencies, co-located with components |
 | Deployment | Vercel | Auto-detects Vite, zero config |
 
----
-
-## Project Structure
+### File structure
 
 ```
-/
-├── index.html          # HTML entry point — viewport & mobile meta tags
-├── vite.config.js      # Vite config with React plugin
-├── package.json
-├── .gitignore
-└── src/
-    ├── main.jsx        # React root mount
-    ├── index.css       # Global reset and base body styles
-    ├── App.jsx         # All app logic and JSX (translations, voice, form)
-    └── App.css         # All styles — mobile-first, RTL-aware logical properties
+src/
+├── main.jsx                          # React root — mounts App only
+├── index.css                         # Global reset + imports tokens.css
+├── App.jsx                           # Thin shell: reads store, owns message state + voice hook
+├── App.css                           # Outer layout only (.app, .content)
+│
+├── styles/
+│   └── tokens.css                    # All design tokens as CSS variables (--c-*, --sp-*, --r-*)
+│
+├── constants/
+│   ├── webhook.js                    # WEBHOOK_URL — change this to update the endpoint
+│   └── speech.js                     # SPEECH_LANG map { en, he }
+│
+├── translations/
+│   └── index.js                      # All UI strings for both languages (T object)
+│
+├── store/
+│   └── useAppStore.js                # Zustand store — lang, dir, t, setLang
+│
+├── hooks/
+│   └── useSpeechRecognition.js       # Web Speech API hook — returns { isListening, supported, toggle, stop }
+│
+└── components/
+    ├── icons/index.jsx               # All SVG icons (GlobeIcon, MicIcon, StopIcon, ArrowIcon, RotateIcon)
+    ├── Navbar/                       # Sticky top bar — brand name + language switcher
+    ├── Hero/                         # Page title + subtitle (reads from translations via store)
+    ├── MessageForm/                  # Textarea, submit button, status messages (owns submit state)
+    ├── BottomBar/                    # Fixed bottom bar with floating mic button
+    └── LandscapeBlock/               # Full-screen overlay shown in landscape orientation
 ```
 
----
+### State management
 
-## Key Implementation Details
+Zustand is used for **global state** — state that multiple components need simultaneously. Local `useState` is used for state that belongs to a single component.
 
-### Webhook Submission
+| State | Where | Reason |
+|---|---|---|
+| `lang`, `dir`, `t` | **Zustand store** (`useAppStore`) | Read by Navbar, Hero, MessageForm, LandscapeBlock |
+| `message` | `App.jsx` local state | Shared between MessageForm (input) and useSpeechRecognition (base text) |
+| `isListening`, `supported` | `useSpeechRecognition` hook | Returned up to App, passed as props to MessageForm + BottomBar |
+| `isSubmitting`, `submitStatus` | `MessageForm` local state | Only used inside the form — no other component cares |
 
-The form POSTs JSON to Make.com on submit:
+**Why Zustand over React Context?**
+Context re-renders every consumer when any value changes. Zustand uses subscriptions — a component re-renders only when the specific slice it reads changes. For an app with rapid voice events and language switching, this matters.
+
+**Why no WebSockets?**
+WebSockets enable real-time server → client push. This app sends one-way to Make.com and doesn't need a server to push anything back. HTTP fetch is sufficient. If Phase 3 adds a custom backend with delivery confirmations or multi-device sync, WebSockets can be introduced then.
+
+### Voice recognition design
+
+- `interimResults: false` — only final confirmed phrases are accepted. Mobile browsers send interim results word-by-word, which caused flickering. Finals-only gives clean, stable updates.
+- `continuous: true` — keeps listening across natural pauses in speech.
+- Results are rebuilt from the full `event.results` array on every `onresult` event (idempotent) because `event.resultIndex` is unreliable on mobile Chrome.
+
+### Design system
+
+Colors, spacing and radii are defined as CSS variables in `src/styles/tokens.css` and mapped from the **Modern Utility** design spec (`DESIGN.md`). Component CSS files use these variables (`var(--c-primary)`, `var(--sp-md)`, etc.) — never raw hex values.
+
+### Webhook
+
+The Make.com webhook URL lives in `src/constants/webhook.js`:
+
+```js
+export const WEBHOOK_URL = 'https://hook.eu1.make.com/...'
+```
+
+The app sends a JSON POST:
 
 ```json
 { "message": "the user's reminder text" }
 ```
 
-The webhook URL is hardcoded at the top of `src/App.jsx`:
+**Important for Make.com:** After changing the webhook URL, open the Make.com scenario, click the webhook module, click **Re-determine data structure**, then send a test message from the app. This updates the field mapping so the active scenario can read `{{1.message}}`.
 
-```js
-const WEBHOOK_URL = 'https://hook.eu1.make.com/...'
-```
+### Adding a language
 
-To change the endpoint, update that constant. Make.com receives the `message` field in the scenario trigger.
+1. Add a new entry to `T` in `src/translations/index.js`
+2. Add the BCP-47 speech code to `SPEECH_LANG` in `src/constants/speech.js`
+3. Update the `setLang` toggle in `src/components/Navbar/Navbar.jsx`
+4. Update `useAppStore` initial state if the new language should be the default
 
-### Internationalisation (Hebrew / English)
+### Changing the webhook URL
 
-Translations are defined in a `T` object at the top of `src/App.jsx`:
+Edit `WEBHOOK_URL` in `src/constants/webhook.js`. Then follow the Make.com re-mapping step above.
 
-```js
-const T = {
-  en: { title: 'Send A Reminder to Yourself', send: 'Send Message', ... },
-  he: { title: 'שלח תזכורת לעצמך', send: 'שלח', ... },
-}
-```
+### Changing colours
 
-The active language is stored in a `lang` state (`'he'` by default). Switching language:
-- Updates `document.documentElement.lang` and `document.documentElement.dir`
-- Sets `dir="rtl"` or `dir="ltr"` on the page root and textarea
-- Switches voice recognition to `he-IL` or `en-US`
-
-**To add a new language:** add an entry to `T`, add its speech code to `SPEECH_LANG`, and extend the language toggle logic.
-
-### RTL Layout
-
-RTL is handled entirely via **CSS logical properties** — no duplicate rules needed:
-
-| Physical property | Logical property used | Effect |
-|---|---|---|
-| `padding-right: 52px` | `padding-inline-end: 52px` | Mic button clearance flips with text direction |
-| `right: 10px` | `inset-inline-end: 10px` | Mic button position flips with text direction |
-| `right: 0` (lang button) | `inset-inline-end: 0` | Lang button corner flips with text direction |
-
-### Voice Input
-
-Uses the browser's built-in `SpeechRecognition` API (prefixed as `webkitSpeechRecognition` on iOS Safari).
-
-**How it works:**
-
-1. On mount, the app checks for `SpeechRecognition` support — the mic button only renders if supported
-2. When the user taps the mic, a snapshot of the current textarea text is saved (`baseTextRef`)
-3. As the user speaks, interim (unconfirmed) text is shown live in the textarea
-4. When a speech segment is finalised by the browser, it's locked in (`finalTextRef`)
-5. When recording stops (manually or after silence), the textarea reverts to confirmed-final text only — no dangling interim fragments
-
-**Browser support:**
-- Android Chrome — full support
-- iOS Safari 14.5+ — works, but `continuous` mode auto-stops after ~10s of silence (iOS limitation, handled gracefully)
-- Firefox / some browsers — not supported; the mic button is hidden automatically
-
----
-
-## Local Development
-
-```bash
-npm install
-npm run dev
-```
-
-App runs at `http://localhost:5173`.
-
----
-
-## Production Build
-
-```bash
-npm run build
-```
-
-Output goes to `/dist`. Preview the build locally with:
-
-```bash
-npm run preview
-```
-
----
-
-## Deploying to Vercel
-
-1. Push the project to a GitHub repository
-2. Go to [vercel.com](https://vercel.com) → **Add New Project** → import the repo
-3. Vercel auto-detects Vite — no manual config needed
-4. Default settings are correct: build command `npm run build`, output directory `dist`
-5. Click **Deploy**
-
----
-
-## Customisation
-
-**Change the webhook URL** — edit `WEBHOOK_URL` in `src/App.jsx`
-
-**Change the default language** — change `useState('he')` to `useState('en')` in `App.jsx`
-
-**Add or edit translations** — update the `T` object in `src/App.jsx`
-
-**Change colours** — all colours are in `src/App.css`; the primary colour is `#6366f1` (indigo)
-
-**Change the browser tab title** — edit `<title>` in `index.html`
+Edit the relevant `--c-*` variable in `src/styles/tokens.css`. The change propagates to every component that uses it.

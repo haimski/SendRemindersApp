@@ -1,0 +1,114 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Level 1 elevation: white surface + soft ambient shadow — no border */
+.card {
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  padding: 18px 20px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--c-secondary);
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 210px;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--c-on-bg);
+  background: transparent;
+  resize: none;
+}
+
+.textarea::placeholder { color: var(--c-outline-variant); }
+.textarea:disabled     { opacity: 0.6; }
+
+.listening-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--c-error);
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-error);
+  animation: blink 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+.unsupported-hint {
+  font-size: 0.8rem;
+  color: var(--c-outline);
+  text-align: center;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 17px 22px;
+  background: var(--c-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--r-button);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.18s, opacity 0.18s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.submit-btn svg         { width: 20px; height: 20px; flex-shrink: 0; }
+.submit-btn:hover:not(:disabled) { background: var(--c-primary-hover); }
+.submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.submit-btn:disabled    { opacity: 0.45; cursor: not-allowed; }
+
+.status-msg {
+  padding: 13px 16px;
+  border-radius: var(--r-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.status-msg.success {
+  background: var(--c-success-bg);
+  color: var(--c-success-text);
+  border: 1px solid var(--c-success-border);
+}
+
+.status-msg.error {
+  background: var(--c-error-container);
+  color: var(--c-on-error-container);
+  border: 1px solid #ffb4ab;
+}

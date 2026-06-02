@@ -1,0 +1,47 @@
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-outline-variant);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  z-index: 100;
+}
+
+/* Elevated above the bar — the FAB (floating action button) pattern */
+.mic-btn {
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--c-tertiary);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-18px);
+  box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45);
+  transition: background 0.18s, box-shadow 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mic-btn svg                       { width: 27px; height: 27px; }
+.mic-btn:hover:not(:disabled)      { background: var(--c-tertiary-hover); }
+.mic-btn:active:not(:disabled)     { transform: translateY(-18px) scale(0.92); }
+.mic-btn:disabled                  { opacity: 0.5; cursor: not-allowed; }
+
+.mic-btn.listening {
+  animation: mic-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45); }
+  50%       { box-shadow: 0 6px 22px rgba(78, 222, 163, 0.45), 0 0 0 14px rgba(78, 222, 163, 0.15); }
+}

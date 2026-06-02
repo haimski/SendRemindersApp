@@ -1,0 +1,31 @@
+.landscape-block {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--c-bg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: var(--sp-xl);
+  text-align: center;
+  color: var(--c-on-bg);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.landscape-block svg {
+  color: var(--c-tertiary);
+  animation: rotate-hint 2s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(20deg); }
+}
+
+@media screen and (orientation: landscape) {
+  .landscape-block { display: flex; }
+}
