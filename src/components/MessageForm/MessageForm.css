@@ -38,6 +38,74 @@
 .textarea::placeholder { color: var(--c-outline-variant); }
 .textarea:disabled     { opacity: 0.6; }
 
+/* ─── Card divider ────────────────────────────────────────── */
+
+.card-divider {
+  height: 1px;
+  background: var(--c-outline-variant);
+  margin: 16px 0;
+  opacity: 0.5;
+}
+
+/* ─── Phone field ─────────────────────────────────────────── */
+
+.phone-input {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1.5px solid var(--c-outline-variant);
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--c-on-bg);
+  background: transparent;
+  transition: border-color 0.18s;
+}
+
+.phone-input:focus {
+  border-bottom-color: var(--c-secondary);
+}
+
+.phone-input::placeholder { color: var(--c-outline-variant); }
+.phone-input:disabled     { opacity: 0.6; }
+
+/* Saved number display row */
+
+.phone-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1.5px solid var(--c-outline-variant);
+}
+
+.phone-number {
+  font-size: 1rem;
+  color: var(--c-on-bg);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.phone-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--r-full);
+  background: var(--c-surface-low);
+  color: var(--c-on-variant);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phone-clear-btn svg       { width: 14px; height: 14px; }
+.phone-clear-btn:hover     { background: var(--c-surface-high); color: var(--c-on-bg); }
+.phone-clear-btn:disabled  { opacity: 0.4; cursor: not-allowed; }
+
 .listening-hint {
   display: flex;
   align-items: center;

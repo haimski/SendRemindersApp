@@ -10,9 +10,20 @@ A mobile-first web app that lets users dictate or type reminders and send them i
 
 - User opens the app on their phone
 - Types or speaks a reminder (voice-to-text via the mic button)
-- Taps **Send to WhatsApp** — the message is delivered to the connected Make.com scenario
+- Enters their **phone number** — saved automatically on first send, pre-filled on every future visit
+- Taps **Send to WhatsApp** — the message and phone number are delivered to the connected Make.com scenario
 - The interface is available in **Hebrew** (default, RTL layout) and **English** (LTR layout)
 - The app only works in **portrait mode** — rotating to landscape shows a "please rotate" screen
+
+### Phone number behaviour
+
+| Situation | What the user sees |
+|---|---|
+| First visit | Empty phone input field |
+| After first send | Saved number shown, X button to change it |
+| User taps X | Input clears immediately, empty field appears |
+| User sends with new number | New number replaces old one and is saved |
+| User sends with no number | Message is sent, no phone is included, nothing is saved |
 
 ### Current status
 
@@ -123,6 +134,18 @@ WebSockets enable real-time server → client push. This app sends one-way to Ma
 
 Colors, spacing and radii are defined as CSS variables in `src/styles/tokens.css` and mapped from the **Modern Utility** design spec (`DESIGN.md`). Component CSS files use these variables (`var(--c-primary)`, `var(--sp-md)`, etc.) — never raw hex values.
 
+### Phone number persistence
+
+Saved using **Zustand `persist` middleware → `localStorage`**. No server required.
+
+- `savedPhone` lives in the Zustand store (`src/store/useAppStore.js`)
+- Persisted automatically to `localStorage` under the key `iremindme-storage`
+- Survives browser close and reopen on the same device
+- Cleared instantly when the user taps X (removed from store + localStorage)
+- Saved on successful form submit only — incomplete numbers are never stored
+
+`lang` (language preference) is also persisted the same way.
+
 ### Webhook
 
 The Make.com webhook URL lives in `src/constants/webhook.js`:
@@ -131,10 +154,10 @@ The Make.com webhook URL lives in `src/constants/webhook.js`:
 export const WEBHOOK_URL = 'https://hook.eu1.make.com/...'
 ```
 
-The app sends a JSON POST:
+The app sends a JSON POST. Phone is included only when a number is present:
 
 ```json
-{ "message": "the user's reminder text" }
+{ "message": "the user's reminder text", "phone": "+972501234567" }
 ```
 
 **Important for Make.com:** After changing the webhook URL, open the Make.com scenario, click the webhook module, click **Re-determine data structure**, then send a test message from the app. This updates the field mapping so the active scenario can read `{{1.message}}`.

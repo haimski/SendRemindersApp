@@ -12,6 +12,9 @@ export const T = {
     error: 'Something went wrong. Please try again.',
     langLabel: 'English',
     landscape: 'Please rotate your device to portrait mode',
+    phoneLabel: 'Phone number',
+    phonePlaceholder: 'e.g. +1 555 000 0000',
+    phoneClear: 'Change number',
   },
   he: {
     title: 'שלחו תזכורות לעצמכם',
@@ -26,5 +29,8 @@ export const T = {
     error: 'משהו השתבש. אנא נסה שוב.',
     langLabel: 'עברית',
     landscape: 'אנא סובב את המכשיר למצב אנכי',
+    phoneLabel: 'מספר טלפון',
+    phonePlaceholder: 'לדוגמה ‎+972 50 000 0000',
+    phoneClear: 'שנה מספר',
   },
 }
