@@ -20,6 +20,42 @@
   on-error-container:      #93000a
 */
 
+/* ─── Portrait-only guard ─────────────────────────────────── */
+
+.landscape-block {
+  display: none; /* hidden in portrait */
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #f8f9ff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px;
+  text-align: center;
+  color: #0b1c30;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.landscape-block svg {
+  color: #4edea3;
+  animation: rotate-hint 2s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(20deg); }
+}
+
+@media screen and (orientation: landscape) {
+  .landscape-block {
+    display: flex;
+  }
+}
+
 /* ─── App shell ───────────────────────────────────────────── */
 
 .app {

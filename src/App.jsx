@@ -56,6 +56,8 @@ export default function App() {
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition
     setSpeechSupported(!!SR)
+    // Best-effort portrait lock — works on Android Chrome; silently ignored on iOS
+    screen.orientation?.lock?.('portrait').catch(() => {})
   }, [])
 
   const startListening = () => {
@@ -154,6 +156,12 @@ export default function App() {
   return (
     <div className="app" dir={dir}>
 
+      {/* ── Portrait-only guard — hidden in portrait, covers all in landscape ── */}
+      <div className="landscape-block" aria-hidden="true">
+        <RotateIcon />
+        <p>{lang === 'he' ? 'אנא סובב את המכשיר למצב אנכי' : 'Please rotate your device to portrait mode'}</p>
+      </div>
+
       {/* ── Top navbar ── */}
       <nav className="navbar">
         <button className="lang-switch" onClick={handleLangSwitch} aria-label="Switch language">
@@ -235,6 +243,17 @@ export default function App() {
       </div>
 
     </div>
+  )
+}
+
+function RotateIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" width="48" height="48" aria-hidden="true">
+      <path d="M4 12a8 8 0 0 1 8-8" />
+      <polyline points="2 8 4 12 8 10" />
+      <rect x="9" y="7" width="6" height="10" rx="1" />
+    </svg>
   )
 }
 
