@@ -69,17 +69,30 @@
 .phone-input::placeholder { color: var(--c-outline-variant); }
 .phone-input:disabled     { opacity: 0.6; }
 
-/* Saved number display row */
+/* ── Saved number — pill shows it is pre-selected ── */
 
 .phone-display {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1.5px solid var(--c-outline-variant);
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(78, 222, 163, 0.1);   /* teal tint — signals "selected/confirmed" */
+  border: 1.5px solid var(--c-tertiary);
+  border-radius: var(--r-lg);
+  margin-top: 2px;
 }
 
+.phone-check-icon {
+  display: flex;
+  align-items: center;
+  color: var(--c-tertiary-hover);
+  flex-shrink: 0;
+}
+
+.phone-check-icon svg { width: 16px; height: 16px; }
+
 .phone-number {
+  flex: 1;
   font-size: 1rem;
   color: var(--c-on-bg);
   font-weight: 500;
@@ -90,20 +103,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: none;
   border-radius: var(--r-full);
-  background: var(--c-surface-low);
-  color: var(--c-on-variant);
+  background: rgba(78, 222, 163, 0.15);
+  color: var(--c-tertiary-hover);
   cursor: pointer;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 
-.phone-clear-btn svg       { width: 14px; height: 14px; }
-.phone-clear-btn:hover     { background: var(--c-surface-high); color: var(--c-on-bg); }
+.phone-clear-btn svg       { width: 13px; height: 13px; }
+.phone-clear-btn:hover     { background: rgba(78, 222, 163, 0.28); }
 .phone-clear-btn:disabled  { opacity: 0.4; cursor: not-allowed; }
 
 .listening-hint {

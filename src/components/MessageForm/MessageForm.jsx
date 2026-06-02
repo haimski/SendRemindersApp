@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import { WEBHOOK_URL } from '../../constants/webhook'
-import { ArrowIcon, CloseIcon } from '../icons'
+import { ArrowIcon, CloseIcon, CheckIcon } from '../icons'
 import './MessageForm.css'
 
 export function MessageForm({ message, setMessage, isListening, speechSupported, onStop }) {
@@ -84,6 +84,7 @@ export function MessageForm({ message, setMessage, isListening, speechSupported,
 
         {savedPhone ? (
           <div className="phone-display">
+            <span className="phone-check-icon"><CheckIcon /></span>
             <span className="phone-number" dir="ltr">{savedPhone}</span>
             <button
               type="button"
@@ -123,7 +124,7 @@ export function MessageForm({ message, setMessage, isListening, speechSupported,
       <button
         type="submit"
         className="submit-btn"
-        disabled={isSubmitting || !message.trim()}
+        disabled={isSubmitting || !message.trim() || !phoneValue.trim()}
       >
         {isSubmitting ? t.sending : (
           <>
